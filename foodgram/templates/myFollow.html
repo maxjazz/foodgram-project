@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ title }}</title>
+{% block css %}
+{% load static %}
+    <link rel="stylesheet" href="{% static 'pages/myFollow.css' %}">
+{% endblock css %}
+</head>
+<body class="body">
+
+{% with subscriptions=True %}
+    {% include 'include/navigation.html' %}
+{% endwith %}
+
+
+<main class="main container">
+    <div class="main__header">
+        <h1 class="main__title">Мои подписки</h1>
+    </div>
+    <div class="card-list">
+        {% for user in page %}
+            <div class="card-user" data-author="{{ user.id }}">
+        <div class="card-user__header">
+            <h2 class="card-user__title">{{ user }}</h2>
+        </div>
+        <div class="card-user__body">
+            <ul class="card-user__items"></ul>
+            {% for user, recipes in recipe.items %}
+                {% for recipe in recipes %}
+                    <li class="card-user__item">
+                    <div class="recipe">
+                        {% load thumbnail %}
+                        {% thumbnail recipe.image "100x100" as im %}
+                        <img src="{{ im.url }}" alt="{{ recipe.title }}" class="recipe__image">
+                        {% endthumbnail %}
+                        <h3 class="recipe__title">{{ recipe.title }}</h3>
+                        <p class="recipe__text"><span class="icon-time"></span> {{ recipe.cooking_time }} мин.</p>
+                    </div>
+                    </li>
+
+                {% endfor %}
+            {% endfor %}
+                <li class="card-user__item">
+                    <a href="{% url 'profile' username=user.username %}" class="card-user__link link">Еще 7 рецептов...</a>
+                </li>
+            </ul>
+        </div>
+            </div>
+         {% endfor %}
+
+    </div>
+        {% include 'include/paginator.html' with items=page paginator=paginator %}
+</main>
+
+
+{% include 'include/footer.html' %}
+{% block js %}
+{% load static %}
+<script src="{% static 'js/config/config.js' %}"></script>
+<script src="{% static 'js/components/Header.js' %}"></script>
+<script src="{% static 'js/components/MainCards.js' %}"></script>
+<script src="{% static 'js/components/MyFollow.js' %}"></script>
+<script src="{% static 'js/components/Subscribe.js' %}"></script>
+<script src="{% static 'js/api/Api.js' %}"></script>
+<script src="{% static 'myFollow.js' %}"></script>
+{% endblock js%}
+
+
+</body>
+</html>

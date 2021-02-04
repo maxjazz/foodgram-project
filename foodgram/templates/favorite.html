@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Избранное</title>
+{% block css %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'pages/index.css' %}">
+{% endblock css %}
+</head>
+<body class="body">
+{% csrf_token %}
+
+{% with favorites=True %}
+    {% include 'include/navigation.html' %}
+{% endwith %}
+
+    <main class="main container">
+        <div class="main__header">
+            <h1 class="main__title">{{ title }}</h1>
+                        <ul class="tags">
+                {% for item in tags_and_urls %}
+                    <li class="tags__item">
+                        {% if item.tag.name in tags %}
+                    <a id="{{ item.tag.name }}" class="tags__checkbox tags__checkbox_style_{{ item.tag.color }} tags__checkbox_active" href="?tag={{ item.url }}"></a>
+                        {% else %}
+                    <a id="{{ item.tag.name }}" class="tags__checkbox tags__checkbox_style_{{ item.tag.color }} tags__checkbox_inactive" href="?tag={{ item.url }}"></a>
+                        {% endif %}
+                        <span class="tags__label">{{ item.tag.title }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+
+        </div>
+        <div class="card-list">
+            {% for item in page %}
+            <div class="card" data-id="{{ item.id }}">
+                {% load thumbnail %}
+                {% thumbnail item.image "960x339" crop="center" upscale=True as im %}
+                <a href="#" class="link" target="_blank"><img src="{{ im.url }}" alt="{{ item.title }}" class="card__image"></a>
+                {% endthumbnail %}
+                <div class="card__body">
+                    <a class="card__title link" href="#" target="_blank">{{ item.title }}</a>
+                    <ul class="card__items">
+                        <li class="card__item"><span class="badge badge_style_green">Обед</span></li>
+                        <li class="card__item"><span class="badge badge_style_orange">Завтрак</span></li>
+                        <li class="card__item"><span class="badge badge_style_purple">Ужин</span></li>
+                    </ul>
+                    <div class="card__items card__items_column">
+                        <p class="card__text"><span class="icon-time"></span> {{ item.cooking_time}} мин.</p>
+                        <p class="card__text"><span class="icon-user"></span> {{ item.author.get_full_name }}</p>
+                    </div>
+                </div>
+                <div class="card__footer">
+                    <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
+                    <button class="button button_style_none " name="favorites" data-out><span class="icon-favorite icon-favorite_active"></span></button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+      {% include 'include/paginator.html' with items=page paginator=paginator %}
+    </main>
+
+
+{% include 'include/footer.html' %}
+{% block js %}
+{% load static %}
+<script src="{% static 'js/components/Favorites.js' %}"></script>
+<script src="{% static 'js/config/config.js' %}"></script>
+
+<script src="{% static 'js/components/Purchases.js' %}"></script>
+<script src="{% static 'js/components/MainCards.js' %}"></script>
+<script src="{% static 'js/components/CardList.js' %}"></script>
+<script src="{% static 'js/components/Header.js' %}"></script>
+
+<script src="{% static 'js/api/Api.js' %}"></script>
+<script src="{% static 'favorite.js' %}"></script>
+{% endblock js%}
+
+
+</body>
+</html>
