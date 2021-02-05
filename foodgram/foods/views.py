@@ -57,7 +57,7 @@ def index(request):
         'tags_and_urls': tags_and_urls
     }
 
-    return render(request, 'indexNotAuth.html', context)
+    return render(request, 'index.html', context)
 
 
 def purchases(request):
@@ -74,7 +74,7 @@ def purchases(request):
         'paginator': paginator,
         'counter': counter
     }
-    return render(request, 'shopList.html', context)
+    return render(request, 'shop_list.html', context)
 
 
 def login(request):
@@ -100,7 +100,7 @@ def recipe(request, recipe_id):
         'recipe': recipe
 
     }
-    return render(request, 'singlePage.html', context)
+    return render(request, 'recipe.html', context)
 
 
 @login_required
@@ -122,7 +122,7 @@ def new_recipe(request):
         'title': 'Создать рецепт',
         'counter': counter
     }
-    return render(request, 'formRecipe.html', context)
+    return render(request, 'new_recipe.html', context)
 
 
 @login_required
@@ -174,7 +174,7 @@ def recipe_edit(request, recipe_id):
         'counter': counter
 
     }
-    return render(request, 'formRecipe.html', context)
+    return render(request, 'new_recipe.html', context)
 
 
 def ingredients(request):
@@ -224,7 +224,7 @@ def favorites(request):
         'tags': tags,
         'tags_and_urls': tags_and_urls
     }
-    return render(request, 'favorite.html', context)
+    return render(request, 'favorites.html', context)
 
 
 def favorites_add(request):
@@ -277,7 +277,7 @@ def subscriptions(request):
         'counter': counter
 
     }
-    return render(request, 'myFollow.html', context)
+    return render(request, 'follow.html', context)
 
 
 def subscribe_add(request):
@@ -369,7 +369,7 @@ def profile(request, username):
         'tags_and_urls': tags_and_urls
 
     }
-    return render(request, 'authorRecipe.html', context)
+    return render(request, 'profile.html', context)
 
 
 @login_required
