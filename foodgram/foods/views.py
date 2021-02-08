@@ -1,5 +1,4 @@
 import csv
-
 from django.core.paginator import Paginator
 import json
 from django.http import JsonResponse, HttpResponse
@@ -8,22 +7,9 @@ from django.contrib.auth.decorators import login_required
 from .forms import RecipeForm
 from .models import Recipe, Ingredient, Favorite, \
     User, Subscription, ShoppingList, RecipeIngredient, Tag
+from .utils import get_counter, get_url
 
-
-def get_counter(user):
-    return Recipe.objects.filter(
-        shopping_list__user=user).count
-
-
-def get_url(tag, tags):
-    answer = []
-    for i in tags:
-        answer.append(i)
-    if tag in answer:
-        answer.remove(tag)
-    else:
-        answer.append(tag)
-    return "&tag=".join(answer)
+MAX_RECIPES_PER_PAGE = 6
 
 
 def index(request):
@@ -31,17 +17,20 @@ def index(request):
         tags = request.GET.getlist('tag')
 
     available_tags = Tag.objects.all()
-    recipes = Recipe.objects.all().filter(tags__name__in=tags)
+    print(tags)
+    recipes = Recipe.objects.filter(
+        tags__name__in=tags
+    ).distinct()
 
     counter = 0
     if request.user.is_authenticated:
         counter = get_counter(request.user)
 
-    paginator = Paginator(recipes, 6)
+    paginator = Paginator(recipes,
+                          MAX_RECIPES_PER_PAGE)
     page_request = request.GET.get('page')
     page = paginator.get_page(page_request)
     tags_and_urls = []
-    print(tags)
     for item in available_tags:
         tags_and_urls.append({
             'tag': item,
@@ -59,12 +48,13 @@ def index(request):
 
     return render(request, 'index.html', context)
 
-
+@login_required
 def purchases(request):
     user = request.user
     shopping_list = Recipe.objects.filter(shopping_list__user=user)
     counter = get_counter(request.user)
-    paginator = Paginator(shopping_list, 6)
+    paginator = Paginator(shopping_list,
+                          MAX_RECIPES_PER_PAGE)
     page_request = request.GET.get('page')
     page = paginator.get_page(page_request)
     context = {
@@ -75,20 +65,6 @@ def purchases(request):
         'counter': counter
     }
     return render(request, 'shop_list.html', context)
-
-
-def login(request):
-    context = {
-        'title': 'Войти на сайт'
-    }
-    return render(request, 'authForm.html', context)
-
-
-def register(request):
-    context = {
-        'title': 'Регистрация'
-    }
-    return render(request, 'reg.html', context)
 
 
 def recipe(request, recipe_id):
@@ -127,7 +103,10 @@ def new_recipe(request):
 
 @login_required
 def recipe_delete(request, recipe_id):
-    return render(request)
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    if request.user.is_superuser or request.user == recipe.author:
+        recipe.delete()
+    return redirect('index')
 
 
 @login_required
@@ -142,8 +121,8 @@ def recipe_edit(request, recipe_id):
                       instance=recipe)
 
     if request.method == 'POST':
-        ing = [v for k, v in request.POST.items()
-               if k.startswith('nameIngredient_')]
+        ing = [value for key, value in request.POST.items()
+               if key.startswith('nameIngredient_')]
         if len(ing) == 0:
             return redirect("recipe", recipe_id=recipe_id)
 
@@ -191,7 +170,7 @@ def ingredients(request):
 
     return JsonResponse(answer, safe=False)
 
-
+@login_required
 def favorites(request):
     if request.method == 'GET':
         tags = request.GET.getlist('tag')
@@ -226,7 +205,7 @@ def favorites(request):
     }
     return render(request, 'favorites.html', context)
 
-
+@login_required
 def favorites_add(request):
     recipe_id = json.loads(request.body).get('id')
     recipe = get_object_or_404(
@@ -242,7 +221,7 @@ def favorites_add(request):
 
     return JsonResponse({'success': True})
 
-
+@login_required
 def favorites_remove(request, recipe_id):
     recipe = get_object_or_404(
         Recipe, pk=recipe_id
@@ -256,7 +235,7 @@ def favorites_remove(request, recipe_id):
 
     return JsonResponse({'success': False})
 
-
+@login_required
 def subscriptions(request):
     user = request.user
     counter = get_counter(request.user)
@@ -279,7 +258,7 @@ def subscriptions(request):
     }
     return render(request, 'follow.html', context)
 
-
+@login_required
 def subscribe_add(request):
     print('add')
     user_id = json.loads(request.body).get('id')
@@ -293,7 +272,7 @@ def subscribe_add(request):
 
     return JsonResponse({'success': True})
 
-
+@login_required
 def subscribe_remove(request, user_id):
     author = get_object_or_404(User, pk=user_id)
 
@@ -306,7 +285,7 @@ def subscribe_remove(request, user_id):
 
     return JsonResponse({'success': False})
 
-
+@login_required
 def purchases_add(request):
     recipe_id = json.loads(request.body).get('id')
     recipe = get_object_or_404(Recipe, pk=recipe_id)
@@ -318,7 +297,7 @@ def purchases_add(request):
 
     return JsonResponse({'success': True})
 
-
+@login_required
 def purchases_remove(request, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id)
 

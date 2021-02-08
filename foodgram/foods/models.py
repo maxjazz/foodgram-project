@@ -1,35 +1,24 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator
 
+from django.contrib.auth import get_user_model
 
-class User(AbstractUser):
-
-    class Role(models.TextChoices):
-        ANONYM = 'anonym', _('Anonym')
-        USER = 'user', _('User')
-        ADMIN = 'admin', _('Admin')
-
-    email = models.EmailField(_('email address'), blank=False, unique=True)
-    bio = models.TextField(blank=True)
-    role = models.CharField(
-        max_length=20,
-        choices=Role.choices,
-        default=Role.USER,
-        )
-    confirmation_code = models.CharField(max_length=100, blank=True, )
-
-    def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+User = get_user_model()
 
 
 class Tag(models.Model):
-    title = models.CharField('Отображаемно название', max_length=20, null=True)
-    color = models.CharField('Цвет тега', max_length=10, null=True)
-    name = models.CharField('Имя тега', max_length=20, null=True)
+    title = models.CharField('Отображаемое название',
+                             max_length=20,
+                             null=True)
+    color = models.CharField('Цвет тега',
+                             max_length=10,
+                             null=True)
+    name = models.CharField('Имя тега',
+                            max_length=20,
+                            null=True)
 
     class Meta:
+        ordering = ('name',)
         verbose_name = 'тэг'
         verbose_name_plural = 'тэги'
 
@@ -38,33 +27,40 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
-    name = models.CharField(max_length=50)
-    unit = models.CharField(max_length=10)
+    name = models.CharField('Название ингредиента',
+                            max_length=50)
+    unit = models.CharField('Единица измерения',
+                            max_length=10)
+
+    class Meta:
+        ordering = ('name',)
+        verbose_name = 'ингредиент'
+        verbose_name_plural = 'ингредиенты'
 
     def __str__(self):
         return self.name
 
 
 class Recipe(models.Model):
-    """
-    Stores a single Recipe entry. Related to `auth.User` , `recipes.Tag` and
-    `recipes.Ingredient` through intermediate model `recipes.RecipeIngredient`.
-    """
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='recipes',
         verbose_name='Автор рецепта'
     )
-    title = models.CharField('Название рецепта', max_length=200)
-    image = models.ImageField('Изображение', upload_to='recipes/')
+    title = models.CharField('Название рецепта',
+                             max_length=200)
+    image = models.ImageField('Изображение',
+                              upload_to='recipes/')
     text = models.TextField('Текст рецепта')
     ingredients = models.ManyToManyField(
         Ingredient,
         through='RecipeIngredient',
         verbose_name='Ингредиент'
     )
-    cooking_time = models.PositiveSmallIntegerField('Время приготовления')
+    cooking_time = models.PositiveSmallIntegerField(
+        'Время приготовления',
+        validators=[MinValueValidator(1)])
     tags = models.ManyToManyField(
         'Tag',
         related_name='recipes',
@@ -77,7 +73,7 @@ class Recipe(models.Model):
     )
 
     class Meta:
-        ordering = ('-pub_date', )
+        ordering = ('-pub_date',)
         verbose_name = 'рецепт'
         verbose_name_plural = 'рецепты'
 
@@ -86,11 +82,6 @@ class Recipe(models.Model):
 
 
 class RecipeIngredient(models.Model):
-    """
-    Intermediate model that supports a Many-to-Many relationship between
-    `recipes.Recipe` and `recipes.Ingredient`.
-    Also stores an additional `quantity` field.
-    """
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE
@@ -102,6 +93,7 @@ class RecipeIngredient(models.Model):
         related_name='recipe_ingredient'
     )
     quantity = models.DecimalField(
+        'Количество',
         max_digits=6,
         decimal_places=0,
         validators=[MinValueValidator(1)]
@@ -122,6 +114,11 @@ class Favorite(models.Model):
         related_name="favorites"
     )
 
+    class Meta:
+        verbose_name = 'избранное'
+        verbose_name_plural = 'избранное'
+        unique_together = ('user', 'recipe')
+
     def __str__(self):
         return self.recipe.title
 
@@ -137,6 +134,11 @@ class Subscription(models.Model):
         on_delete=models.CASCADE,
         related_name="following"
     )
+
+    class Meta:
+        unique_together = ('user', 'author')
+        verbose_name = 'подписка'
+        verbose_name_plural = 'подписки'
 
     def __str__(self):
         return self.user.username
@@ -159,6 +161,12 @@ class ShoppingList(models.Model):
         on_delete=models.CASCADE,
         related_name='shopping_list'
     )
+
+    class Meta:
+        ordering = ('user',)
+        verbose_name = 'список покупок'
+        verbose_name_plural = 'список покупок'
+        unique_together = ('user', 'recipe')
 
     def __str__(self):
         return self.recipe.title
