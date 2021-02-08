@@ -132,3 +132,5 @@ LOGOUT_REDIRECT_URL = "index"
 SITE_ID = 1
 APPEND_SLASH=True
 
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")

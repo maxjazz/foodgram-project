@@ -1,12 +1,14 @@
 import csv
-from django.core.paginator import Paginator
 import json
-from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
+
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+
 from .forms import RecipeForm
-from .models import Recipe, Ingredient, Favorite, \
-    User, Subscription, ShoppingList, RecipeIngredient, Tag
+from .models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                     ShoppingList, Subscription, Tag, User)
 from .utils import get_counter, get_url
 
 MAX_RECIPES_PER_PAGE = 6
