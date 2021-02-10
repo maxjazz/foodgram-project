@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
+
 load_dotenv(find_dotenv())
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -133,7 +134,11 @@ LOGIN_URL = "/account/login/"
 LOGIN_REDIRECT_URL = "index"
 LOGOUT_REDIRECT_URL = "index"
 SITE_ID = 1
-APPEND_SLASH=True
+APPEND_SLASH=False
 
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
+
+# FOODS APPLICATION SETTINGS
+MAX_RECIPES_PER_PAGE = 6
+MAX_RECIPES_PER_PROFILE_CARD = 3

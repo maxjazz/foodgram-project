@@ -1,6 +1,7 @@
 import csv
 import json
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
@@ -11,15 +12,11 @@ from .models import (Favorite, Ingredient, Recipe, RecipeIngredient,
                      ShoppingList, Subscription, Tag, User)
 from .utils import get_counter, get_url
 
-MAX_RECIPES_PER_PAGE = 6
-
 
 def index(request):
     if request.method == 'GET':
         tags = request.GET.getlist('tag')
-
     available_tags = Tag.objects.all()
-    print(tags)
     recipes = Recipe.objects.filter(
         tags__name__in=tags
     ).distinct()
@@ -29,14 +26,14 @@ def index(request):
         counter = get_counter(request.user)
 
     paginator = Paginator(recipes,
-                          MAX_RECIPES_PER_PAGE)
+                          settings.MAX_RECIPES_PER_PAGE)
     page_request = request.GET.get('page')
     page = paginator.get_page(page_request)
     tags_and_urls = []
     for item in available_tags:
         tags_and_urls.append({
             'tag': item,
-            'url': get_url(item.name, tags)
+            'url': get_url(item.name, sanitize_tag)
         })
 
     context = {
@@ -50,13 +47,14 @@ def index(request):
 
     return render(request, 'index.html', context)
 
+
 @login_required
 def purchases(request):
     user = request.user
     shopping_list = Recipe.objects.filter(shopping_list__user=user)
     counter = get_counter(request.user)
     paginator = Paginator(shopping_list,
-                          MAX_RECIPES_PER_PAGE)
+                          settings.MAX_RECIPES_PER_PAGE)
     page_request = request.GET.get('page')
     page = paginator.get_page(page_request)
     context = {
@@ -83,7 +81,8 @@ def recipe(request, recipe_id):
 
 @login_required
 def new_recipe(request):
-    form = RecipeForm(request.POST or None, files=request.FILES or None)
+    form = RecipeForm(request.POST or None,
+                      files=request.FILES or None)
     counter = get_counter(request.user)
     if form.is_valid():
         my_recipe = form.save(commit=False)
@@ -123,17 +122,13 @@ def recipe_edit(request, recipe_id):
                       instance=recipe)
 
     if request.method == 'POST':
-        ing = [value for key, value in request.POST.items()
-               if key.startswith('nameIngredient_')]
-        if len(ing) == 0:
-            return redirect("recipe", recipe_id=recipe_id)
-
         ingredients = {}
         for item in request.POST:
             if item.startswith('nameIngredient_'):
                 num = item[len('nameIngredient_'):]
-                ingredients[request.POST[item]] = \
-                    int(float(request.POST[f'valueIngredient_{num}']))
+                name = request.POST[item]
+                value = request.POST[f'valueIngredient_{num}']
+                ingredients[name] = value
 
         if form.is_valid():
             my_recipe = form.save(commit=False)
@@ -172,6 +167,7 @@ def ingredients(request):
 
     return JsonResponse(answer, safe=False)
 
+
 @login_required
 def favorites(request):
     if request.method == 'GET':
@@ -194,7 +190,8 @@ def favorites(request):
         tags__name__in=tags
     )
 
-    paginator = Paginator(favorite_recipes, 6)
+    paginator = Paginator(favorite_recipes,
+                          settings.MAX_RECIPES_PER_PAGE)
     page_request = request.GET.get('page')
     page = paginator.get_page(page_request)
     context = {
@@ -206,6 +203,7 @@ def favorites(request):
         'tags_and_urls': tags_and_urls
     }
     return render(request, 'favorites.html', context)
+
 
 @login_required
 def favorites_add(request):
@@ -223,6 +221,7 @@ def favorites_add(request):
 
     return JsonResponse({'success': True})
 
+
 @login_required
 def favorites_remove(request, recipe_id):
     recipe = get_object_or_404(
@@ -236,6 +235,7 @@ def favorites_remove(request, recipe_id):
         return JsonResponse({'success': True})
 
     return JsonResponse({'success': False})
+
 
 @login_required
 def subscriptions(request):
@@ -260,12 +260,11 @@ def subscriptions(request):
     }
     return render(request, 'follow.html', context)
 
+
 @login_required
 def subscribe_add(request):
-    print('add')
     user_id = json.loads(request.body).get('id')
     author = get_object_or_404(User, pk=user_id)
-    print(json.loads(request.body))
     _, created = Subscription.objects.get_or_create(
         user=request.user, author=author)
 
@@ -273,6 +272,7 @@ def subscribe_add(request):
         return JsonResponse({'success': False})
 
     return JsonResponse({'success': True})
+
 
 @login_required
 def subscribe_remove(request, user_id):
@@ -287,6 +287,7 @@ def subscribe_remove(request, user_id):
 
     return JsonResponse({'success': False})
 
+
 @login_required
 def purchases_add(request):
     recipe_id = json.loads(request.body).get('id')
@@ -298,6 +299,7 @@ def purchases_add(request):
         return JsonResponse({'success': False})
 
     return JsonResponse({'success': True})
+
 
 @login_required
 def purchases_remove(request, recipe_id):
@@ -330,7 +332,8 @@ def profile(request, username):
              ).distinct()
 
     counter = get_counter(request.user)
-    paginator = Paginator(recipes_profile, 6)
+    paginator = Paginator(recipes_profile,
+                          settings.MAX_RECIPES_PER_PAGE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 

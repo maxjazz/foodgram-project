@@ -22,15 +22,8 @@
     </div>
     <div class="card__footer">
         {% if user.is_authenticated %}
-        <button class="button button_style_light-blue" name="purchases" data-out><span
-                class="icon-plus button__icon"></span>Добавить в покупки
-        </button>
-        {% if recipe.favorite_recipes.all %}
-        <button class="button button_style_none " name="favorites" data-out><span
-                class="icon-favorite icon-favorite_active"></span></button>
-        {% else %}
-        <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>
-        {% endif %}
+        {% include 'include/add_to_list_button.html' with active=recipe.shopping_list.all %}
+        {% include 'include/add_to_fav_button.html' with active=recipe.favorite_recipes.all %}
         {% endif %}
     </div>
 </div>

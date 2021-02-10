@@ -1,0 +1,8 @@
+<li class="card-user__item">
+    {% if user.recipes.all|length > 3 %}
+    <a href="{% url 'profile' username=user.username %}" class="card-user__link link">Еще {{ user.recipes.all|length|add:'-3'}}
+        рецептa(ов)...</a>
+    {% else %}
+    <a href="{% url 'profile' username=user.username %}" class="card-user__link link">Перейти на страницу профиля.</a>
+    {% endif %}
+</li>

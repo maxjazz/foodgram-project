@@ -25,8 +25,7 @@
             <div class="single-card__header-info">
                 <h1 class="single-card__title">{{ recipe.title }}</h1>
                 <div class="single-card__favorite">
-                    <button class="button button_style_none" name="favorites" data-out><span
-                            class="icon-favorite icon-favorite_big"></span></button>
+                     {% include 'include/add_to_fav_button.html' with active=recipe.favorite_recipes.all %}
                     <div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
                 </div>
             </div>
@@ -48,23 +47,18 @@
                 </ul>
             </div>
             <ul class="single-card__items">
+                  {% include 'include/add_to_list_button.html' with active=recipe.shopping_list.all %}
+
                 <li class="single-card__item">
-                    <button class="button button_style_blue" name="purchases" data-out><span class="icon-plus"></span>
-                        Добавить в покупки
-                    </button>
-                </li>
-                <li class="single-card__item">
-                    <button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>
-                        Подписаться на автора
-                    </button>
+                    {% include 'include/subscribe_button.html' with active=True %}
                 </li>
             </ul>
             <div class="single-card__section">
                 <h3 class="single-card__section-title">Ингредиенты:</h3>
                 <div class="single-card__items single-card__items_column">
                     {% for amount in recipe.recipe_ingredient.all %}
-                    <p class=" single-card__section-item">{{ amount.ingredient.name }} - {{ amount.quantity }} {{
-                        amount.ingredient.unit }}</p>
+                    <p class=" single-card__section-item">
+                        {{ amount.ingredient.name }} - {{ amount.quantity }} {{ amount.ingredient.unit }}</p>
                     {% endfor %}
                 </div>
             </div>

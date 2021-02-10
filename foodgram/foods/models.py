@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import F
 
 User = get_user_model()
 
@@ -47,10 +48,14 @@ class Recipe(models.Model):
         related_name='recipes',
         verbose_name='Автор рецепта'
     )
-    title = models.CharField('Название рецепта',
-                             max_length=200)
-    image = models.ImageField('Изображение',
-                              upload_to='recipes/')
+    title = models.CharField(
+        'Название рецепта',
+        max_length=200
+    )
+    image = models.ImageField(
+        'Изображение',
+        upload_to='recipes/'
+    )
     text = models.TextField('Текст рецепта')
     ingredients = models.ManyToManyField(
         Ingredient,
@@ -91,10 +96,8 @@ class RecipeIngredient(models.Model):
         on_delete=models.CASCADE,
         related_name='recipe_ingredient'
     )
-    quantity = models.DecimalField(
+    quantity = models.PositiveIntegerField(
         'Количество',
-        max_digits=6,
-        decimal_places=0,
         validators=[MinValueValidator(1)]
     )
 
@@ -135,9 +138,17 @@ class Subscription(models.Model):
     )
 
     class Meta:
-        unique_together = ('user', 'author')
         verbose_name = 'подписка'
         verbose_name_plural = 'подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='uniq_follower',
+            ),
+            models.CheckConstraint(
+                check=~models.Q(user=F('author')),
+                name='user_not_author'),
+        ]
 
     def __str__(self):
         return self.user.username
