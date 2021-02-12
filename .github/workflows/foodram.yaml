@@ -58,8 +58,8 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }} # если ваш ssh-ключ защищен фразой-паролем
         script: |
-          sudo docker pull maxjazz/yamdb
-          cd /home/${{ secrets.USER }}/yamdb_final
+          sudo docker pull maxjazz/foodgram
+          cd /home/${{ secrets.USER }}/foodgram
           sudo docker-compose stop
           sudo docker-compose up --force-recreate -d web
  
