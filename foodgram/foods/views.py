@@ -16,10 +16,15 @@ from .utils import get_counter, get_url
 def index(request):
     if request.method == 'GET':
         tags = request.GET.getlist('tag')
+    tags = [x for x in tags if x]
+    if len(tags) == 0:
+        recipes = Recipe.objects.distinct()
+    else:
+        recipes = Recipe.objects.filter(
+            tags__name__in=tags
+        ).distinct()
+
     available_tags = Tag.objects.all()
-    recipes = Recipe.objects.filter(
-        tags__name__in=tags
-    ).distinct()
 
     counter = 0
     if request.user.is_authenticated:
@@ -184,11 +189,17 @@ def favorites(request):
 
     user = request.user
     counter = get_counter(request.user)
-    favorite_recipes = Recipe.objects.filter(
-        favorite_recipes__user=user
-    ).filter(
-        tags__name__in=tags
-    )
+    tags = [x for x in tags if x]
+    if len(tags) == 0:
+        favorite_recipes = Recipe.objects.filter(
+            favorite_recipes__user=user
+        ).distinct()
+    else:
+        favorite_recipes = Recipe.objects.filter(
+            favorite_recipes__user=user
+        ).filter(
+            tags__name__in=tags
+        )
 
     paginator = Paginator(favorite_recipes,
                           settings.MAX_RECIPES_PER_PAGE)
