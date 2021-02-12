@@ -350,11 +350,19 @@ def profile(request, username):
 
     profile = get_object_or_404(User, username=username)
 
-    recipes_profile = Recipe.objects.filter(
-        author=profile
-    ).select_related(
-        'author'
-    ).filter(tags__name__in=tags
+    tags = [x for x in tags if x]
+    if len(tags) == 0:
+        recipes_profile = Recipe.objects.filter(
+            author=profile
+        ).select_related(
+            'author'
+                 ).distinct()
+    else:
+        recipes_profile = Recipe.objects.filter(
+            author=profile
+        ).select_related(
+            'author'
+        ).filter(tags__name__in=tags
              ).distinct()
 
     counter = get_counter(request.user)
