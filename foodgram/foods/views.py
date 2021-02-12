@@ -362,8 +362,9 @@ def profile(request, username):
             author=profile
         ).select_related(
             'author'
-        ).filter(tags__name__in=tags
-             ).distinct()
+        ).filter(
+            tags__name__in=tags
+                 ).distinct()
 
     counter = get_counter(request.user)
     paginator = Paginator(recipes_profile,
