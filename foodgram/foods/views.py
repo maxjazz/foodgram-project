@@ -89,15 +89,30 @@ def new_recipe(request):
     form = RecipeForm(request.POST or None,
                       files=request.FILES or None)
     counter = get_counter(request.user)
+    if request.method == 'POST':
+        ingredients = {}
+        for item in request.POST:
+            if item.startswith('nameIngredient_'):
+                num = item[len('nameIngredient_'):]
+                name = request.POST[item]
+                value = request.POST[f'valueIngredient_{num}']
+                ingredients[name] = value
     if form.is_valid():
-        my_recipe = form.save(commit=False)
-        my_recipe.author = request.user
-        my_recipe.save()
+        recipe = form.save(commit=False)
+        recipe.author = request.user
+        recipe.save()
+
+        for title, quantity in ingredients.items():
+            RecipeIngredient(
+                recipe=recipe,
+                ingredient=Ingredient.objects.filter(name=title)[0],
+                quantity=int(quantity)
+            ).save()
 
         form.save_m2m()
         return redirect(
             'recipe',
-            recipe_id=my_recipe.id)
+            recipe_id=recipe.id)
 
     context = {
         'form': form,
