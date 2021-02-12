@@ -22,7 +22,7 @@ jobs:
       - name: Lint with flake8
         run: >-
           flake8 . --exclude 
-          foodgarm/users/migrations, foodgram/foodgram/migrations, foodgram/foodgram/settings.py
+          foodgarm/users/migrations,foodgram/foodgram/migrations,foodgram/foodgram/settings.py
       - name: Test with pytest
         run: pytest
 
