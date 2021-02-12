@@ -16,6 +16,7 @@ services:
     image: maxjazz/foodgram
     volumes:
       - ./static:/code/static
+      - ./media:/code/media
     restart: always
     expose:
       - "8080"
