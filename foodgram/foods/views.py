@@ -33,7 +33,7 @@ def index(request):
     for item in available_tags:
         tags_and_urls.append({
             'tag': item,
-            'url': get_url(item.name, sanitize_tag)
+            'url': get_url(item.name, available_tags)
         })
 
     context = {
