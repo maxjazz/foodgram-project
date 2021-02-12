@@ -43,7 +43,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: maxjazz/yamdb:latest
+          tags: maxjazz/foodgram:latest
 
   deploy:
     name: Deploy docker images to production server
