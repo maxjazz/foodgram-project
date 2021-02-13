@@ -24,10 +24,12 @@
         <div class="single-card__info">
             <div class="single-card__header-info">
                 <h1 class="single-card__title">{{ recipe.title }}</h1>
+                {% if user.is_authenticated %}
                 <div class="single-card__favorite">
-                     {% include 'include/add_to_fav_button.html' with active=recipe.favorite_recipes.all %}
+                    {% include 'include/add_to_fav_button.html' with active=recipe.favorite_recipes.all %}
                     <div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
                 </div>
+                {% endif %}
             </div>
 
             <ul class="single-card__items">
@@ -42,17 +44,21 @@
                 <ul class="single-card__items">
                     <li class="single-card__item"><p class="single-card__text"><span class="icon-user"></span>
                         {{ recipe.author.get_full_name }}</p></li>
+                    {% if user.is_authenticated %}
                     <li class="single-card__item"><a style="margin-left: 2.5em" href="{% url 'recipe_edit' recipe.id %}"
                                                      class="single-card__text">Редактировать рецепт</a></li>
+                    {% endif %}
                 </ul>
             </div>
+            {% if user.is_authenticated %}
             <ul class="single-card__items">
-                  {% include 'include/add_to_list_button.html' with active=recipe.shopping_list.all %}
+                {% include 'include/add_to_list_button.html' with active=recipe.shopping_list.all %}
 
                 <li class="single-card__item">
                     {% include 'include/subscribe_button.html' with active=True %}
                 </li>
             </ul>
+            {% endif %}
             <div class="single-card__section">
                 <h3 class="single-card__section-title">Ингредиенты:</h3>
                 <div class="single-card__items single-card__items_column">

@@ -366,7 +366,9 @@ def profile(request, username):
             tags__name__in=tags
                  ).distinct()
 
-    counter = get_counter(request.user)
+    counter = 0
+    if request.user.is_authenticated:
+        counter = get_counter(request.user)
     paginator = Paginator(recipes_profile,
                           settings.MAX_RECIPES_PER_PAGE)
     page_number = request.GET.get('page')

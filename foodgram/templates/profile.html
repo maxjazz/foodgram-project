@@ -26,11 +26,13 @@
         </ul>
 
     </div>
+    {% if user.is_authenticated %}
     <div class="author-subscribe" data-author="{{ profile.id }}">
         <p style="padding: 0 0 2em 0;">
-             {% include 'include/subscribe_button.html' with active=True %}
+            {% include 'include/subscribe_button.html' with active=True %}
         </p>
     </div>
+    {% endif %}
     <div class="card-list">
         {% for recipe in page %}
         {% include 'include/card.html' with recipe=recipe %}
