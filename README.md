@@ -68,14 +68,14 @@ docker-compose run web python manage.py createsuperuser
 
 #### Страница проекта
 ```
-http://http://130.193.35.12/
+http://178.154.248.170/
 ```
 
 
 
 #### Страница администрирования
 ```
-http://http://130.193.35.12/admin/
+http://178.154.248.170/admin/
 ```
 
 ![example workflow name](https://github.com/maxjazz/foodgram-project/workflows/foodgram/badge.svg)
