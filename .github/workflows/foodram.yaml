@@ -1,6 +1,6 @@
 name: foodgram
 
-on: [ push ]
+on: [push]
 
 jobs:
   tests:
@@ -23,7 +23,6 @@ jobs:
         run: >-
           flake8 . --exclude 
           foodgram/users/migrations,foodgram/foods/migrations,foodgram/foodgram/settings.py
-
 
   build_and_push_to_docker_hub:
     name: Push Docker image to DockerHub
@@ -50,28 +49,27 @@ jobs:
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
     steps:
-    - name: executing remote ssh commands to deploy
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USER }}
-        key: ${{ secrets.SSH_KEY }}
-        passphrase: ${{ secrets.PASSPHRASE }}
-        script: |
-          sudo docker pull maxjazz/foodgram
-          cd /home/${{ secrets.USER }}/foodgram-project
-          sudo docker-compose stop
-          sudo docker-compose up --force-recreate -d web
- 
+      - name: executing remote ssh commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+          script: |
+            sudo docker pull maxjazz/foodgram
+            cd /home/${{ secrets.USER }}/foodgram-project
+            sudo docker-compose stop
+            sudo docker-compose up --force-recreate -d web
 
   send_message:
     name: Send message to telegram
     runs-on: ubuntu-latest
     needs: deploy
     steps:
-    - name: send message
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.TELEGRAM_CHAT_ID }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: ${{ github.workflow }} успешно выполнен!
+      - name: send message
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: ${{ github.workflow }} успешно выполнен!
