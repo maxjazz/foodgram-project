@@ -43,6 +43,6 @@ def recipe_name(num):
         return 'рецептов'
     if num % 10 == 1:
         return 'рецепт'
-    if num % 10 in [2,3,4]:
+    if num % 10 in [2, 3, 4]:
         return 'рецепта'
     return 'рецептов'
