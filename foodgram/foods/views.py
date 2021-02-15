@@ -368,7 +368,6 @@ def profile(request, username):
     if request.method == 'GET':
         tags = request.GET.getlist('tag')
 
-
     available_tags = Tag.objects.all()
     tags_and_urls = []
 
