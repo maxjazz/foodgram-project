@@ -20,17 +20,8 @@
     <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
     <div class="form__field-group form__field-group_time">
         <input type="{{ field.widget_type }}" id="{{ field.id_for_label }}" name="{{ field.html_name }}"
-               value="{{ field.value|default_if_none:'' }}" class="form__input">
+            value="{{ field.value|default_if_none:'' }}" class="form__input">
         <label for="{{ field.id_for_label }}" class="form__label">минут</label>
-        <span class="form__error">{{ field.errors }}</span>
-    </div>
-</div>
-{% elif field.name == 'text '%}
-<div class="form__group">
-    <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
-    <div class="form__field-group">
-        <input id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default_if_none:'' }}"
-            class="form__input" required>
         <span class="form__error">{{ field.errors }}</span>
     </div>
 </div>
@@ -42,8 +33,8 @@
             {% for tag in form.fields.tags.choices.queryset %}
             <div class="tags__item">
                 <input type="checkbox" name="tags" id="id_{{ tag.name }}"
-                       class="tags__checkbox tags__checkbox_style_{{ tag.color }}" value="{{ tag.pk }}"
-                       {% if tag.pk|is_checked:form.tags.value %}checked{% endif %}>
+                    class="tags__checkbox tags__checkbox_style_{{ tag.color }}" value="{{ tag.pk }}"
+                    {% if tag.pk|is_checked:form.tags.value %}checked{% endif %}>
                 <label for="id_{{ tag.name }}" class="tags__label">{{ tag.title }}</label>
             </div>
             {% endfor %}
@@ -70,11 +61,11 @@
                 <span> {{ i.ingredient.name }} {{ i.quantity }} {{ i.ingredient.unit }}</span>
                 <span class="form__field-item-delete"></span>
                 <input id="nameIngredient_{{ forloop.counter }}" name="nameIngredient_{{ forloop.counter }}"
-                       type="hidden" value="{{ i.ingredient.name }}">
+                    type="hidden" value="{{ i.ingredient.name }}">
                 <input id="valueIngredient_{{ forloop.counter }}" name="valueIngredient_{{ forloop.counter }}"
-                       type="hidden" value="{{ i.quantity }}">
+                    type="hidden" value="{{ i.quantity }}">
                 <input id="unitsIngredient_{{ forloop.counter }}" name="unitsIngredient_{{ forloop.counter }}"
-                       type="hidden" value="{{ i.ingredient.unit }}">
+                    type="hidden" value="{{ i.ingredient.unit }}">
             </div>
             {% endfor %}
             {% else %}
@@ -83,11 +74,11 @@
                 <span> {{ i.name }} {{ i.value }} {{ i.quantity }}</span>
                 <span class="form__field-item-delete"></span>
                 <input id="nameIngredient_{{ forloop.counter }}" name="nameIngredient_{{ forloop.counter }}"
-                       type="hidden" value="{{ i.name }}">
+                    type="hidden" value="{{ i.name }}">
                 <input id="valueIngredient_{{ forloop.counter }}" name="valueIngredient_{{ forloop.counter }}"
-                       type="hidden" value="{{ i.value }}">
+                    type="hidden" value="{{ i.value }}">
                 <input id="unitsIngredient_{{ forloop.counter }}" name="unitsIngredient_{{ forloop.counter }}"
-                       type="hidden" value="{{ i.quantity }}">
+                    type="hidden" value="{{ i.quantity }}">
             </div>
             {% endfor %}
             {% endif %}
@@ -96,11 +87,29 @@
         <span class="form__error"></span>
     </div>
 </div>
-{% else %}
+{% elif field.name == 'image' %}
 <div class="form__group">
     <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
     <div class="form__field-group">
         {{ field }}
+        <span class="form__error">{{ field.errors }}</span>
+    </div>
+</div>
+{% elif field.name == 'text' %}
+<div class="form__group">
+    <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
+    <div class="form__field-group">
+        <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}" rows="8" class="form__textarea">
+            {{ field.value|default_if_none:'' }}</textarea>
+        <span class="form__error"></span>
+    </div>
+</div>
+{% else %}
+<div class="form__group">
+    <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
+    <div class="form__field-group">
+        <input id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default_if_none:'' }}"
+            class="form__input" required>
         <span class="form__error">{{ field.errors }}</span>
     </div>
 </div>
