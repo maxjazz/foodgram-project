@@ -2,6 +2,7 @@ import csv
 import json
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
@@ -73,12 +74,22 @@ def purchases(request):
 
 
 def recipe(request, recipe_id):
+    following = False
     recipe = get_object_or_404(
         Recipe, pk=recipe_id
     )
+
+    if request.user.is_authenticated:
+        if Subscription.objects.filter(
+            user=request.user, author=recipe.author.id
+        ).exists():
+            following = True
+
+
     context = {
         'title': recipe.title,
-        'recipe': recipe
+        'recipe': recipe,
+        'following': following
 
     }
     return render(request, 'recipe.html', context)
@@ -89,6 +100,7 @@ def new_recipe(request):
     form = RecipeForm(request.POST or None,
                       files=request.FILES or None)
     counter = get_counter(request.user)
+    temp_ingredients = []
     if request.method == 'POST':
         ingredients = {}
         for item in request.POST:
@@ -96,7 +108,10 @@ def new_recipe(request):
                 num = item[len('nameIngredient_'):]
                 name = request.POST[item]
                 value = request.POST[f'valueIngredient_{num}']
+                quantity = request.POST[f'unitsIngredient_{num}']
+                temp_ingredients.append({'name': name, 'value': value, 'quantity': quantity})
                 ingredients[name] = value
+
     if form.is_valid():
         recipe = form.save(commit=False)
         recipe.author = request.user
@@ -113,10 +128,14 @@ def new_recipe(request):
         return redirect(
             'recipe',
             recipe_id=recipe.id)
+    else:
+        messages.error(request, form.errors)
+        print(form.data)
 
     context = {
         'form': form,
         'title': 'Создать рецепт',
+        'ingredients': temp_ingredients,
         'counter': counter
     }
     return render(request, 'new_recipe.html', context)
@@ -142,6 +161,7 @@ def recipe_edit(request, recipe_id):
                       instance=recipe)
 
     if request.method == 'POST':
+        print(request.POST['tags'])
         ingredients = {}
         for item in request.POST:
             if item.startswith('nameIngredient_'):
@@ -161,6 +181,7 @@ def recipe_edit(request, recipe_id):
                     ingredient=Ingredient.objects.filter(name=title)[0],
                     quantity=int(quantity)
                 ).save()
+            form.save_m2m()
             return redirect("recipe", recipe_id=recipe_id)
 
     context = {
@@ -275,7 +296,7 @@ def subscriptions(request):
     for sub in follower:
         recipe[sub] = Recipe.objects.filter(
             author=sub
-        )[:2]
+        )[:3]
     context = {
         'title': 'Мои подписки',
         'page': page,
@@ -345,10 +366,17 @@ def profile(request, username):
     if request.method == 'GET':
         tags = request.GET.getlist('tag')
 
+    following = False
+
     available_tags = Tag.objects.all()
     tags_and_urls = []
 
     profile = get_object_or_404(User, username=username)
+
+    if Subscription.objects.filter(
+            user=request.user, author=profile
+    ).exists():
+        following = True
 
     tags = [x for x in tags if x]
     if len(tags) == 0:
@@ -356,7 +384,7 @@ def profile(request, username):
             author=profile
         ).select_related(
             'author'
-                 ).distinct()
+        ).distinct()
     else:
         recipes_profile = Recipe.objects.filter(
             author=profile
@@ -364,7 +392,7 @@ def profile(request, username):
             'author'
         ).filter(
             tags__name__in=tags
-                 ).distinct()
+        ).distinct()
 
     counter = 0
     if request.user.is_authenticated:
@@ -379,9 +407,10 @@ def profile(request, username):
             'tag': item,
             'url': get_url(item.name, tags)
         })
-
+    print(following)
     context = {
         'title': 'Рецепты',
+        'following': following,
         'paginator': paginator,
         'profile': profile,
         'page': page,

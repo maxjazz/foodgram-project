@@ -3,32 +3,39 @@
         <div class="nav__container container">
             {% if user.is_authenticated %}
             <ul class="nav__items list">
-                <li class="nav__item {% if recipes %} nav__item_active {% endif %}"><a href="{% url 'index' %}"
-                                                                                       class="nav__link link">Рецепты</a>
+                <li class="nav__item {% if 'index' in request.resolver_match.url_name %} nav__item_active {% endif %}">
+                    <a href="{% url 'index' %}" class="nav__link link">Рецепты</a>
                 </li>
-                <li class="nav__item {% if subscriptions %} nav__item_active {% endif %}"><a
-                        href="{% url 'subscriptions' %}" class="nav__link link">Мои подписки</a></li>
-                <li class="nav__item {% if new %} nav__item_active {% endif %}"><a href="{% url 'new_recipe' %}"
-                                                                                   class="nav__link link">Создать
-                    рецепт</a></li>
-                <li class="nav__item {% if favorites %} nav__item_active {% endif %}"><a href="{% url 'favorites' %}"
-                                                                                         class="nav__link link">Избранное</a>
+                <li
+                    class="nav__item {% if 'subscriptions' in request.resolver_match.url_name %} nav__item_active {% endif %}">
+                    <a href="{% url 'subscriptions' %}" class="nav__link link">Мои подписки</a></li>
+                <li
+                    class="nav__item {% if 'new_recipe' in request.resolver_match.url_name %} nav__item_active {% endif %}">
+                    <a href="{% url 'new_recipe' %}" class="nav__link link">Создать
+                        рецепт</a></li>
+                <li
+                    class="nav__item {% if 'favorites' in request.resolver_match.url_name %} nav__item_active {% endif %}">
+                    <a href="{% url 'favorites' %}" class="nav__link link">Избранное</a>
                 </li>
-                <li class="nav__item  {% if purchases  %} nav__item_active {% endif %}"><a href="{% url 'purchases' %}"
-                                           class="nav__link link">Список
-                    покупок</a> <span class="badge badge_style_blue nav__badge" id="counter">{{ counter }}</span></li>
+                <li
+                    class="nav__item  {% if 'purchases' in request.resolver_match.url_name %} nav__item_active {% endif %}">
+                    <a href="{% url 'purchases' %}" class="nav__link link">Список
+                        покупок</a> <span class="badge badge_style_blue nav__badge" id="counter">{{ counter }}</span>
+                </li>
 
             </ul>
             <ul class="nav__items list">
-                <li class="nav__item {% if password_change %} nav__item_active {% endif %}"><a
-                        href="{% url 'password_change' %}" class="nav__link link">Изменить пароль</a>
+                <li
+                    class="nav__item {% if 'password_change' in request.resolver_match.url_name %} nav__item_active {% endif %}">
+                    <a href="{% url 'password_change' %}" class="nav__link link">Изменить пароль</a>
                 </li>
                 <li class="nav__item"><a href="{% url 'logout' %}" class="nav__link link">Выход</a></li>
             </ul>
             {% else %}
             <ul class="nav__items list">
-                <li class="nav__item nav__item_disabled {% if recipes %} nav__item_active {% endif %}"><a
-                        href="{% url 'index' %}" class="nav__link link">Рецепты</a></li>
+                <li
+                    class="nav__item nav__item_disabled {% if 'index' in request.resolver_match.url_name %} nav__item_active {% endif %}">
+                    <a href="{% url 'index' %}" class="nav__link link">Рецепты</a></li>
             </ul>
             <ul class="nav__items list">
                 <li class="nav__item"><a href="{% url 'login' %}" class="nav__link link">Войти</a></li>

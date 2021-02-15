@@ -1,4 +1,4 @@
-{% extends "include/base.html" %}
+{% extends "base.html" %}
 {% block title %}
 {{ title}}
 {% endblock title %}
@@ -6,12 +6,6 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'pages/index.css' %}">
 {% endblock css %}
-
-{% block navigation %}
-{% with favorites=True %}
-{% include 'include/navigation.html' %}
-{% endwith %}
-{% endblock navigation %}
 
 {% block content %}
 {% csrf_token %}
@@ -57,4 +51,5 @@
 
 
 </body>
+
 </html>

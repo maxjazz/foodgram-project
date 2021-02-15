@@ -1,4 +1,4 @@
-{% extends "include/base.html" %}
+{% extends "base.html" %}
 {% block title %}
 {{ title}}
 {% endblock title %}
@@ -8,19 +8,23 @@
 <link rel="stylesheet" href="{% static 'pages/form.css' %}">
 {% endblock css %}
 
-{% block navigation %}
-{% with purchases=True %}
-{% include 'include/navigation.html' %}
-{% endwith %}
-{% endblock %}
-
 
 {% block content %}
 <main class="main container">
     <div class="main__header">
-        <h1 class="main__title">{{ title }}</h1>
+        <h1 class="main__title">Создать аккаунт</h1>
     </div>
-    {% include 'forms/signup_form_fields.html' %}
+    <div class="form-container">
+        <form method="post" action="{% url 'signup' %}" class="form">
+            {% csrf_token %}
+            {% for field in form %}
+            {% include 'forms/foodgram_form_fields.html' with field=field %}
+            {% endfor %}
+            <div class="form__footer">
+                <button class="button button_style_blue">Создать аккаунт
+                </button>
+            </div>
+    </div>
 </main>
 {% endblock content %}
 

@@ -1,0 +1,13 @@
+{% load user_filters %}
+{% if field.name == 'tags'%}
+{% include 'forms/tags_form_field.html' with field=field %}
+{% include 'forms/ingredients_form_field.html' %}
+{% elif field.name == 'cooking_time' %}
+{% include 'forms/cooking_time_form_field.html' with field=field%}
+{% elif field.name == 'text'%}
+{% include 'forms/text_form_field.html' with field=field %}
+{% elif field.name == 'title' %}
+{% include 'forms/recipe_name_form_field.html' with field=field %}
+{% else %}
+{% include 'forms/form_field.html' with field=field %}
+{% endif %}

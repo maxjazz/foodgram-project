@@ -1,25 +1,16 @@
-{% extends "include/base.html" %}
+{% extends "base.html" %}
 {% block title %}
 {{ title}}
 {% endblock title %}
 
-{% csrf_token %}
+
 {% block css %}
 {% load static %}
 <link href="{% static 'pages/index.css' %}" rel="stylesheet">
 {% endblock css %}
 
-
-{% block navigation %}
-{% with recipes=True %}
-{% include 'include/navigation.html' %}
-{% endwith %}
-{% endblock navigation %}
-
-
 {% block content %}
 {% csrf_token %}
-
 <main class="main container">
     <div class="main__header">
         <h1 class="main__title">{{ title }}</h1>

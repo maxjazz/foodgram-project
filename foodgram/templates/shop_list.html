@@ -1,4 +1,4 @@
-{% extends "include/base.html" %}
+{% extends "base.html" %}
 {% block title %}
 {{ title}}
 {% endblock title %}
@@ -7,12 +7,6 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'pages/shopList.css' %}">
 {% endblock css %}
-
-{% block navigation %}
-{% with purchases=True %}
-{% include 'include/navigation.html' %}
-{% endwith %}
-{% endblock %}
 
 {% block content %}
 {% csrf_token %}
@@ -29,7 +23,7 @@
             {% endfor %}
         </ul>
         <a href="{% url 'shoplist' %}">
-            {% include "include/button.html" with title='Скачать список' %}
+            <button class="button button_style_blue">Скачать список</button>
         </a>
     </div>
 </main>
