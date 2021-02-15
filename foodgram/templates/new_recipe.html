@@ -19,11 +19,7 @@
     <div class="form-container">
         <form class="form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-
-            {% for field in form%}
-            {% include 'forms/foodgram_form_fields.html' %}
-            {% endfor %}
-
+            {% include 'forms/form_fields.html' with form=form %}
             <div class="form__footer">
                 {% if recipe %}
                 <button class="button button_style_blue">Сохранить</button>

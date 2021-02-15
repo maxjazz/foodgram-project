@@ -11,12 +11,6 @@
 <link rel="stylesheet" href="{% static 'pages/form.css' %}">
 {% endblock %}
 
-{% block navigation %}
-{% with recipes=True %}
-{% include 'include/navigation.html' %}
-{% endwith %}
-{% endblock navigation %}
-
 {% block content %}
 <main class="main container">
     <div class="main__header">
@@ -25,12 +19,7 @@
     <div class="form-container">
         <form class="form" method="post" action="{% url 'login' %}">
             {% csrf_token %}
-            {% for field in form %}
-            {% include 'forms/foodgram_form_fields.html' with field=field %}
-            {% endfor %}
-            {% if form.errors %}
-            <span class="form__error">Имя пользователя и пароль не совпадают. Введите правильные данные.</span>
-            {% endif %}
+            {% include 'forms/form_fields.html' with form=form %}
             <div class="form__footer">
                 <button class="button button_style_blue">Войти</button>
                 <a class="form__forgot-link" href="{% url 'password_reset' %}">Забыли пароль?</a>
@@ -38,6 +27,7 @@
         </form>
     </div>
 </main>
+
 {% endblock %}
 
 {% block footer %}

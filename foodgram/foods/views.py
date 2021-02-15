@@ -364,20 +364,15 @@ def purchases_remove(request, recipe_id):
 
 
 def profile(request, username):
+    following = False
     if request.method == 'GET':
         tags = request.GET.getlist('tag')
 
-    following = False
 
     available_tags = Tag.objects.all()
     tags_and_urls = []
 
     profile = get_object_or_404(User, username=username)
-
-    if Subscription.objects.filter(
-            user=request.user, author=profile
-    ).exists():
-        following = True
 
     tags = [x for x in tags if x]
     if len(tags) == 0:
@@ -398,6 +393,10 @@ def profile(request, username):
     counter = 0
     if request.user.is_authenticated:
         counter = get_counter(request.user)
+        if Subscription.objects.filter(
+                user=request.user, author=profile
+        ).exists():
+            following = True
     paginator = Paginator(recipes_profile,
                           settings.MAX_RECIPES_PER_PAGE)
     page_number = request.GET.get('page')
