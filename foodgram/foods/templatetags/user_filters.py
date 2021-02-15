@@ -36,9 +36,10 @@ def is_checked(tag, available_tags):
         return True
     return False
 
+
 @register.filter(name="recipe_name")
 def recipe_name(num):
-    if num > 10 and num < 21:
+    if 10 < num < 21:
         return 'рецептов'
     if num % 10 == 1:
         return 'рецепт'

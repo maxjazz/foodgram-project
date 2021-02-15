@@ -85,7 +85,6 @@ def recipe(request, recipe_id):
         ).exists():
             following = True
 
-
     context = {
         'title': recipe.title,
         'recipe': recipe,
@@ -109,7 +108,9 @@ def new_recipe(request):
                 name = request.POST[item]
                 value = request.POST[f'valueIngredient_{num}']
                 quantity = request.POST[f'unitsIngredient_{num}']
-                temp_ingredients.append({'name': name, 'value': value, 'quantity': quantity})
+                temp_ingredients.append({'name': name,
+                                         'value': value,
+                                         'quantity': quantity})
                 ingredients[name] = value
 
     if form.is_valid():
