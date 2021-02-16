@@ -17,9 +17,7 @@
     <div class="form-container">
         <form method="post" action="{% url 'signup' %}" class="form">
             {% csrf_token %}
-            {% for field in form %}
-            {% include 'forms/foodgram_form_fields.html' with field=field %}
-            {% endfor %}
+           {% include 'forms/form_fields.html' with form=form %}
             <div class="form__footer">
                 <button class="button button_style_blue">Создать аккаунт
                 </button>

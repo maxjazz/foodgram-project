@@ -46,3 +46,9 @@ def recipe_name(num):
     if num % 10 in [2, 3, 4]:
         return 'рецепта'
     return 'рецептов'
+
+@register.filter(name="password_check")
+def password_check(str):
+    if 'password' in str:
+        return True
+    return False
