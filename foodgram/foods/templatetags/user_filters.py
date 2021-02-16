@@ -47,6 +47,7 @@ def recipe_name(num):
         return 'рецепта'
     return 'рецептов'
 
+
 @register.filter(name="password_check")
 def password_check(str):
     if 'password' in str:
